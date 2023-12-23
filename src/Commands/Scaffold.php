@@ -31,8 +31,8 @@ class Scaffold extends Command {
      */
     public function handle() {
 
-        $this->option('folder') && str($this->option('folder'))->isNotEmpty()
-            ? NamespaceResolver::setFolder($this->option('folder'))
+        $this->option('dir') && str($this->option('dir'))->isNotEmpty()
+            ? NamespaceResolver::setFolder($this->option('dir'))
             : null;
 
         if ($this->option('types')) {
