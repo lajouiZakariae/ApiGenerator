@@ -52,8 +52,8 @@ class {{ $controller_name }} extends Controller {
 
 @if ($belongs_to_relations)
 @foreach ($belongs_to_relations as $relation)
-{{ "\t" }}public function {{ $relation->method_name }}({{ $relation->parent_model_name }} ${{ str($relation->parent_model_name)->snake()->lower() }}): Response {
-        return response(${{ str($relation->parent_model_name)->snake()->lower() }}->{{ $relation->child_method_name }});
+{{ "\t" }}public function {{ $relation->method_name }}({{ $relation->parent_model_name }} ${{ $relation->parent_variable_name }}): Response {
+        return response(${{ $relation->parent_variable_name }}->{{ $relation->relation_method_name }});
     }{{ "\n" }}
 @endforeach
 @endif

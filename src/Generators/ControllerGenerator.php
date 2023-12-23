@@ -21,6 +21,9 @@ class ControllerGenerator implements IGenerator {
 
     private ?Collection $belongs_to_relations = null;
 
+    /** @var ?Collection<string> $routes_as_strings */
+    private $routes_as_strings = null;
+
     public function __construct(Table $table) {
         $this->table = $table;
 
@@ -36,20 +39,41 @@ class ControllerGenerator implements IGenerator {
 
         $this->form_request_name = $this->table->getPostRequestName();
 
-        $this->belongs_to_relations = $this->table->getRelations()->get('belongs_to')?->map(function ($relation) {
-            $method_name =  str($relation->parent_table)
-                ->singular()
-                ->append(str($relation->child_table)->camel()->ucfirst());
+        if ($this->table->getRelations()->has('belongs_to')) {
+            $this->routes_as_strings = collect();
 
-            $parent_model_name = str($relation->parent_table)->singular()->camel()->ucfirst();
+            $this->belongs_to_relations = $this->table->getRelations()->get('belongs_to')->map(function ($relation) {
+                $method_name =  str($relation->parent_table)
+                    ->singular()
+                    ->append(str($relation->child_table)->camel()->ucfirst());
 
-            return ((object)[
-                'model_import' => NamespaceResolver::modelImport($parent_model_name),
-                'method_name' => $method_name,
-                'parent_model_name' => $parent_model_name,
-                'child_method_name' => str($relation->child_table)->camel(),
-            ]);
-        });
+                $parent_model_name = str($relation->parent_table)->singular()->camel()->ucfirst();
+
+                $parent_variable_name = str($parent_model_name)->snake()->lower();
+
+                $route = str($relation->parent_table)
+                    ->append("/{")
+                    ->append($parent_variable_name)
+                    ->append("}/")
+                    ->append($relation->child_table);
+
+                $controller_method = str('[ ')
+                    ->append(NamespaceResolver::controllerImport($this->controller_name))
+                    ->append('::class, ')
+                    ->append("'$method_name'")
+                    ->append(' ]');
+
+                $this->routes_as_strings->add("Route::get('$route', $controller_method);\n\n");
+
+                return ((object)[
+                    'model_import' => NamespaceResolver::modelImport($parent_model_name),
+                    'method_name' => $method_name,
+                    'parent_model_name' => $parent_model_name,
+                    'parent_variable_name' => $parent_variable_name,
+                    'relation_method_name' => str($relation->child_table)->camel(),
+                ]);
+            });
+        }
     }
 
     /**
@@ -62,6 +86,14 @@ class ControllerGenerator implements IGenerator {
             $directory_path = app_path('Http/Controllers/' . $path);
             if (!is_dir($directory_path)) mkdir($directory_path);
         });
+    }
+
+    private function appendRoutes(): void {
+        File::append(base_path('routes/api.php'), "\nRoute::apiResource(" . NamespaceResolver::controllerImport($this->table->getControllerName()) . "::class);\n\n");
+
+        $this->routes_as_strings?->each(
+            fn (string $route_string) => File::append(base_path('routes/api.php'), $route_string)
+        );
     }
 
     /**
@@ -84,6 +116,6 @@ class ControllerGenerator implements IGenerator {
 
         File::put(app_path('Http/Controllers/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getControllerName() . '.php'), $content);
 
-        File::append(base_path('routes/api.php'), "\nRoute::apiResource(" . NamespaceResolver::controllerImport($this->table->getControllerName()) . "::class);\n");
+        $this->appendRoutes();
     }
 }
