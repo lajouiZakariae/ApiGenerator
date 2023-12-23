@@ -31,6 +31,10 @@ class Scaffold extends Command {
      */
     public function handle() {
 
+
+        dump(Generator::table('products')->controller());
+        dd(Generator::table('products')->model());
+
         $this->option('dir') && str($this->option('dir'))->isNotEmpty()
             ? NamespaceResolver::setFolder($this->option('dir'))
             : null;

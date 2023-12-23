@@ -25,11 +25,7 @@ class Table {
     }
 
     function getModelName() {
-        return str()->ucfirst(
-            str()->camel(
-                str()->singular($this->name)
-            )
-        );
+        return str($this->name)->singular()->camel()->ucfirst();
     }
 
     function getControllerName() {

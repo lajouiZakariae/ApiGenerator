@@ -41,6 +41,8 @@ class Generator {
     public function model(): void {
         $model = new ModelGenerator($this->table);
 
+        $model->loadData();
+
         $model->generateFile();
 
         $this->generateEnumsIfNotExists();

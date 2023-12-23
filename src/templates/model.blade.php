@@ -44,16 +44,16 @@ class {{ $name }} extends Model {
 
 @if ($hasManyRelations)
 @foreach ($hasManyRelations as $relation)
-{{ "\t" }}public function {{ str()->camel($relation->child_table) }}(): HasMany {
-{{ "\t\t" }}return $this->hasMany({{ str()->ucfirst(str()->camel(str()->singular($relation->child_table))) }}::class);
+{{ "\t" }}public function {{ str($relation->child_table)->camel() }}(): HasMany {
+{{ "\t\t" }}return $this->hasMany({{ str($relation->child_table)->singular()->camel()->ucfirst() }}::class);
 {{ "\t" }}}
 {{ "\n" }}
 @endforeach
 @endif
 @if ($belongsToRelations)
 @foreach ($belongsToRelations as $relation)
-{{ "\t" }}public function {{ str()->camel(str()->singular($relation->parent_table)) }}(): BelongsTo {
-{{ "\t\t" }}return $this->belongsTo({{ str()->ucfirst(str()->camel(str()->singular($relation->parent_table))) }}::class);
+{{ "\t" }}public function {{ str($relation->parent_table)->singular()->camel() }}(): BelongsTo {
+{{ "\t\t" }}return $this->belongsTo({{ str($relation->parent_table)->singular()->camel()->ucfirst() }}::class);
 {{ "\t" }}}
 {{ "\n" }}
 @endforeach

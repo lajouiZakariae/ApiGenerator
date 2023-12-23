@@ -2,6 +2,7 @@
 
 namespace Zakalajo\ApiGenerator\Generators;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Zakalajo\ApiGenerator\Interfaces\IGenerator;
 use Zakalajo\ApiGenerator\NamespaceResolver;
@@ -18,6 +19,8 @@ class ControllerGenerator implements IGenerator {
 
     private ?string $form_request_name = null;
 
+    private ?Collection $belongs_to_relations = null;
+
     public function __construct(Table $table) {
         $this->table = $table;
 
@@ -30,7 +33,20 @@ class ControllerGenerator implements IGenerator {
      */
     function loadData(): void {
         $this->resource_name = $this->table->getResourceName();
+
         $this->form_request_name = $this->table->getPostRequestName();
+
+        $this->belongs_to_relations = $this->table->getRelations()->get('belongs_to')?->map(function ($relation) {
+            $method_name =  str($relation->parent_table)
+                ->singular()
+                ->append(str($relation->child_table)->camel()->ucfirst());
+
+            return ((object)[
+                'method_name' => $method_name,
+                'parent_model_name' => str($relation->parent_table)->singular()->camel()->ucfirst(),
+                'child_method_name' => str($relation->child_table)->camel(),
+            ]);
+        });
     }
 
     /**
@@ -60,6 +76,7 @@ class ControllerGenerator implements IGenerator {
                     ? NamespaceResolver::resourceImport($this->resource_name) : null,
                 "form_request_import" => $this->form_request_name
                     ? NamespaceResolver::formRequestImport($this->form_request_name) : null,
+                "belongs_to_relations" => $this->belongs_to_relations
             ])->render();
 
         File::put(app_path('Http/Controllers/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getControllerName() . '.php'), $content);
