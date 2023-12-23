@@ -57,11 +57,11 @@ class ControllerGenerator implements IGenerator {
                     ->append("}/")
                     ->append($relation->child_table);
 
-                $controller_method = str('[ ')
+                $controller_method = str('[')
                     ->append(NamespaceResolver::controllerImport($this->controller_name))
                     ->append('::class, ')
                     ->append("'$method_name'")
-                    ->append(' ]');
+                    ->append(']');
 
                 $this->routes_as_strings->add("Route::get('$route', $controller_method);\n\n");
 
