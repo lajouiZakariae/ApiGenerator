@@ -41,9 +41,12 @@ class ControllerGenerator implements IGenerator {
                 ->singular()
                 ->append(str($relation->child_table)->camel()->ucfirst());
 
+            $parent_model_name = str($relation->parent_table)->singular()->camel()->ucfirst();
+
             return ((object)[
+                'model_import' => NamespaceResolver::modelImport($parent_model_name),
                 'method_name' => $method_name,
-                'parent_model_name' => str($relation->parent_table)->singular()->camel()->ucfirst(),
+                'parent_model_name' => $parent_model_name,
                 'child_method_name' => str($relation->child_table)->camel(),
             ]);
         });
