@@ -12,5 +12,12 @@
             "email": "lajoui.zakariae.1@gmail.com"
         }
     ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "\\Zakalajo\\ApiGenerator\\ApiGenerator"
+            ]
+        }
+    },
     "require": {}
 }
