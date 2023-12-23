@@ -3,9 +3,8 @@
 namespace Zakalajo\ApiGenerator;
 
 use Illuminate\Support\ServiceProvider;
-use Zakalajo\ApiGenerator\Commands\ScaffoldAll;
-use Zakalajo\ApiGenerator\Commands\ScaffoldTable;
-use Zakalajo\ApiGenerator\Commands\User;
+use Zakalajo\ApiGenerator\Commands\Scaffold;
+use Zakalajo\ApiGenerator\Commands\UserCreate;
 
 class ApiGenerator extends ServiceProvider {
     /**
@@ -22,8 +21,8 @@ class ApiGenerator extends ServiceProvider {
         $this->loadViewsFrom(__DIR__ . '/templates', 'apigenerator');
 
         $this->commands([
-            ScaffoldAll::class,
-            User::class,
+            Scaffold::class,
+            UserCreate::class,
         ]);
         //
     }

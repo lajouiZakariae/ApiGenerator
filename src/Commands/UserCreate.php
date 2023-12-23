@@ -5,7 +5,7 @@ namespace Zakalajo\ApiGenerator\Commands;
 use App\Models\User as ModelsUser;
 use Illuminate\Console\Command;
 
-class User extends Command {
+class UserCreate extends Command {
     /**
      * The name and signature of the console command.
      *
