@@ -35,11 +35,10 @@ class TypescriptGenerator {
                 $this->enums->add($column);
 
                 $this->types->put($column->getName(), [
-                    'type' => str()->ucfirst(str()->camel($column->getName())),
+                    'type' => str($column->getName())->camel()->ucfirst(),
                     'nullable' => $column->isNullable(),
                 ]);
             } else {
-
                 $this->types->put(str()->camel($column->getName()), [
                     'type' => $this->typescriptType($column),
                     'nullable' => $column->isNullable(),

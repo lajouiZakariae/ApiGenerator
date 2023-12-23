@@ -46,7 +46,7 @@ class ModelGenerator {
             }
 
             if ($column->getType() === 'enum') {
-                $this->casts->put("'" . $column->getName() . "'", "\App\Enums\\" . str()->ucfirst($column->getName()) . '::class');
+                $this->casts->put("'" . $column->getName() . "'", "\App\Enums\\" . str($column->getName())->camel()->ucfirst() . '::class');
             }
         });
 

@@ -44,7 +44,7 @@ class FormRequestGenerator implements IGenerator {
 
                 if ($column->getType() === 'enum') {
                     $this->should_import_rule_class = true;
-                    return $rules->add("Rule::enum(\App\\Enums\\" . str()->ucfirst($column->getName()) . "::class)");
+                    return $rules->add("Rule::enum(\App\\Enums\\" . str($column->getName())->camel()->ucfirst() . "::class)");
                 }
 
                 if ($column->isForeign()) {

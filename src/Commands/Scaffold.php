@@ -17,7 +17,7 @@ class Scaffold extends Command {
      *
      * @var string
      */
-    protected $signature = 'scaff:api  {--folder=} {--types} {--enums}';
+    protected $signature = 'scaff:api  {--dir=} {--types} {--enums}';
 
     /**
      * The console command description.
@@ -32,8 +32,8 @@ class Scaffold extends Command {
     public function handle() {
 
 
-        dump(Generator::table('products')->controller());
-        dd(Generator::table('products')->model());
+        // dump(Generator::table('products')->controller());
+        // dd(Generator::table('products')->model());
 
         $this->option('dir') && str($this->option('dir'))->isNotEmpty()
             ? NamespaceResolver::setFolder($this->option('dir'))

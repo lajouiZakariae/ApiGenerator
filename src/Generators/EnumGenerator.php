@@ -24,7 +24,7 @@ class EnumGenerator {
      * @return string
      */
     public function getName(): string {
-        return str()->ucfirst(str()->camel($this->name));
+        return str($this->name)->camel()->ucfirst();
     }
 
     /**
@@ -37,7 +37,7 @@ class EnumGenerator {
         $enum = "export enum " . $this->getName() . " {\n";
 
         $enum .= $this->values
-            ->map(fn ($value) => "\t" . str()->upper(str()->snake($value)) . " = \"" . $value . "\",\n")
+            ->map(fn ($value) => "\t" . str($value)->snake()->upper() . " = \"" . $value . "\",\n")
             ->implode("");
 
         return $enum . "}\n";
@@ -54,7 +54,7 @@ class EnumGenerator {
 
         $enum .= $this->values
             ->map(
-                fn ($value) => "\tconst " . str()->upper(str()->snake($value)) . " = \"" . $value . "\";\n"
+                fn ($value) => "\tconst " . str($value)->snake()->upper() . " = \"" . $value . "\";\n"
             )->implode("\n");
 
         return $enum . "}\n";

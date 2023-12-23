@@ -4,7 +4,6 @@ namespace Zakalajo\ApiGenerator\Database;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use \Illuminate\Support\Str;
 
 class Column {
     private string $table;
