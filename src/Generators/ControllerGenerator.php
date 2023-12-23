@@ -89,7 +89,14 @@ class ControllerGenerator implements IGenerator {
     }
 
     private function appendRoutes(): void {
-        File::append(base_path('routes/api.php'), "\nRoute::apiResource(" . NamespaceResolver::controllerImport($this->table->getControllerName()) . "::class);\n\n");
+
+        $table_name = $this->table->getName();
+        $controller = NamespaceResolver::controllerImport($this->table->getControllerName()) . "::class";
+
+        File::append(
+            base_path('routes/api.php'),
+            "\nRoute::apiResource('$table_name', $controller);\n\n"
+        );
 
         $this->routes_as_strings?->each(
             fn (string $route_string) => File::append(base_path('routes/api.php'), $route_string)
