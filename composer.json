@@ -1,0 +1,16 @@
+{
+    "name": "zakalajo/api-generator",
+    "description": "generates api from database tables",
+    "autoload": {
+        "psr-4": {
+            "Zakalajo\\ApiGenerator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Lajoui Zakariae",
+            "email": "lajoui.zakariae.1@gmail.com"
+        }
+    ],
+    "require": {}
+}
