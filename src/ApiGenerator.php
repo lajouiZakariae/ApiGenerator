@@ -30,7 +30,6 @@ class ApiGenerator extends ServiceProvider {
             ResourceCreate::class,
             ModelCreate::class,
             FormRequestCreate::class,
-            FactoryCreate::class,
         ]);
     }
 }

@@ -21,7 +21,7 @@ class FormRequestCreate extends Command {
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generates a new form request';
 
     /**
      * Execute the console command.

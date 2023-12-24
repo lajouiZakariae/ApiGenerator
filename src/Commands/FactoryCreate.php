@@ -17,7 +17,7 @@ class FactoryCreate extends Command {
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generates a new factory';
 
     /**
      * Execute the console command.

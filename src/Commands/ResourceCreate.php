@@ -23,7 +23,7 @@ class ResourceCreate extends Command {
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generates a new resource';
 
     /**
      * Execute the console command.

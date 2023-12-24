@@ -4,6 +4,8 @@ namespace Zakalajo\ApiGenerator\Commands;
 
 use App\Models\User as ModelsUser;
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\DB;
 
 class UserCreate extends Command {
     /**
@@ -18,12 +20,16 @@ class UserCreate extends Command {
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Creates a new user';
 
     /**
      * Execute the console command.
      */
     public function handle() {
-        ModelsUser::factory()->create();
+        $user = ModelsUser::factory()->create();
+
+        $this->info('Generated successfully');
+
+        $this->info('Email is: ' . $user->email);
     }
 }

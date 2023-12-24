@@ -17,7 +17,7 @@ class ApiCreate extends Command {
      *
      * @var string
      */
-    protected $signature = 'scaff:api  {--dir=} {--types} {--enums}';
+    protected $signature = 'scaff:api {table?} {--dir=} {--types} {--enums}';
 
     /**
      * The console command description.

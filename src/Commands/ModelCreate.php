@@ -21,7 +21,7 @@ class ModelCreate extends Command {
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generates a new model';
 
     /**
      * Execute the console command.
