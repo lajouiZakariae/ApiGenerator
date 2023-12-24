@@ -24,7 +24,7 @@ class ModelGenerator {
     /**
      * Loads neccessary data for the model
      */
-    function loadData(bool $no_relations = false): void {
+    public function loadData(bool $no_relations = false): void {
         $this->fillables = $this->table
             ->getColumns()
             ->filter(fn (Column $col) => !in_array($col->getName(), ['id', 'created_at', 'updated_at']))
@@ -62,6 +62,15 @@ class ModelGenerator {
     }
 
     /**
+     * Chech File existence
+     * @return bool
+     **/
+    public function fileExists(): bool {
+        $path = app_path('Models/' . $this->table->getModelName() . '.php');
+        return File::exists($path);
+    }
+
+    /**
      * Generates the model file
      */
     function generateFile() {
@@ -74,6 +83,7 @@ class ModelGenerator {
                 'belongsToRelations' => $this->belongs_to_relations,
             ])->render();
 
-        File::put(app_path('Models/' . $this->table->getModelName() . '.php'), $content);
+        $path = app_path('Models/' . $this->table->getModelName() . '.php');
+        File::put($path, $content);
     }
 }

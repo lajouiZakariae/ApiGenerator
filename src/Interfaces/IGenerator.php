@@ -7,5 +7,7 @@ interface IGenerator {
 
     function ensureFolderExists(): void;
 
+    function fileExists(): bool;
+
     function generateFile(): void;
 }

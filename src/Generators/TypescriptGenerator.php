@@ -10,16 +10,20 @@ use Zakalajo\ApiGenerator\Database\Table;
 class TypescriptGenerator {
     private Table $table;
 
-    /** @var Collection $types  */
-    private Collection $types;
+    /** @var Collection<object> $types  */
+    private $types;
 
-    private Collection $enums;
+    /** @var Collection<Column> $types  */
+    private $enums;
 
-    private array $numeric_types = ['tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'bit', 'float', 'double', 'decimal'];
+    /** @var string[] $numeric_types */
+    private $numeric_types = ['tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'bit', 'float', 'double', 'decimal'];
 
-    private array $date_types = ['timestamp', 'date', 'datetime', 'time'];
+    /** @var string[] $date_types */
+    private $date_types = ['timestamp', 'date', 'datetime', 'time'];
 
-    private array $binary_types = ['binary', 'varbinary', 'blob'];
+    /** @var string[] $binary_types */
+    private $binary_types = ['binary', 'varbinary', 'blob'];
 
     public function __construct(Table $table) {
         $this->table = $table;
@@ -49,19 +53,29 @@ class TypescriptGenerator {
 
     /**
      * Determine the Type for Typescript
-     * @param Column $column 
+     * @param Column $column
      * @return string
      */
     private function typescriptType(Column $column): string {
-        if ($column->getType() === "tinyint" && $column->getMaxLength() === 1) return 'boolean';
+        if ($column->getType() === "tinyint" && $column->getMaxLength() === 1) {
+            return 'boolean';
+        }
 
-        if ($column->getType() === "enum") return 'enum';
+        if ($column->getType() === "enum") {
+            return 'enum';
+        }
 
-        if (in_array($column->getType(), $this->numeric_types)) return 'number';
+        if (in_array($column->getType(), $this->numeric_types)) {
+            return 'number';
+        }
 
-        if (in_array($column->getType(), $this->date_types)) return 'Date';
+        if (in_array($column->getType(), $this->date_types)) {
+            return 'Date';
+        }
 
-        if (in_array($column->getType(), $this->binary_types)) return 'Buffer';
+        if (in_array($column->getType(), $this->binary_types)) {
+            return 'Buffer';
+        }
 
         return 'string';
     }
@@ -73,7 +87,7 @@ class TypescriptGenerator {
     private function interface(): string {
         $interface = "export interface " . $this->table->getModelName() . " {\n";
 
-        $interface .= $this->types->reduce(function (string $acc,  $type, $key) {
+        $interface .= $this->types->reduce(function (string $acc, $type, $key) {
             return $acc . "\t" . $key . ($type['nullable'] ? '?' : '') . ": " . $type["type"] . ";\n";
         }, '');
 
@@ -97,15 +111,17 @@ class TypescriptGenerator {
      * Creates the Folder for types
      */
     public function ensureFolderExists(): void {
-        if (!is_dir(base_path('types'))) mkdir(base_path('types'));
+        if (!is_dir(base_path('types'))) {
+            mkdir(base_path('types'));
+        }
     }
 
     /**
-     * Generates the typescript file
+     * Generates the typescript file for a single table
+     * with enums if the table contains enum columns
      */
-    public function generateFile(string $file_name = 'index'): void {
-        // $this->ensureFolderExists();
-        File::append(base_path('types') . '/' . $file_name . '.ts', $this->interface());
+    public function generateFile(): void {
+        File::put(base_path('types') . '/' . $this->table->getModelName() . '.ts', $this->interface());
     }
 
     /**
@@ -113,8 +129,7 @@ class TypescriptGenerator {
      * @param Collection<Table> $tables
      * @return string
      */
-    static function interfaces($tables) {
-
+    public static function interfaces($tables) {
         $content = $tables
             ->map(fn ($table) => (new self($table))->interface())
             ->implode("\n");
@@ -123,11 +138,15 @@ class TypescriptGenerator {
     }
 
     /**
+     * Generates the typescript file for multiple tables
+     * with enums if the tables contain enum columns
      * @param Collection<Table> $tables
      * @param string $file_name
      */
-    static function generateAll($tables, $file_name = 'index') {
-        if (!is_dir(base_path('types'))) mkdir(base_path('types'));
+    public static function generateAll($tables, $file_name = 'index') {
+        if (!is_dir(base_path('types'))) {
+            mkdir(base_path('types'));
+        }
         File::put(base_path("types/$file_name.ts"), self::interfaces($tables));
     }
 }

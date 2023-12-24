@@ -78,6 +78,16 @@ class FormRequestGenerator implements IGenerator {
     }
 
     /**
+     * Chech File existence
+     * @return bool
+     **/
+    public function fileExists(): bool {
+        $path = app_path('Http/Requests/' . NamespaceResolver::getFolderPath() . "/" . $this->table->getPostRequestName() . '.php');
+
+        return File::exists($path);
+    }
+
+    /**
      * Creates Form Requests folder
      */
     function ensureFolderExists(): void {
@@ -109,6 +119,8 @@ class FormRequestGenerator implements IGenerator {
                 'should_import_rule_class' => $this->should_import_rule_class,
             ])->render();
 
-        File::put(app_path('Http/Requests/' . NamespaceResolver::getFolderPath() . "/" . $this->table->getPostRequestName() . '.php'), $content);
+        $path = app_path('Http/Requests/' . NamespaceResolver::getFolderPath() . "/" . $this->table->getPostRequestName() . '.php');
+
+        File::put($path, $content);
     }
 }

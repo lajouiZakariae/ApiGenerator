@@ -10,15 +10,17 @@ use Zakalajo\ApiGenerator\Database\Table;
 use function Laravel\Prompts\info;
 
 class Generator {
+    private Table $table;
+
     private Collection $generators;
 
     private static ?Collection $generator_instances = null;
 
     private bool $enums_generated = false;
 
-    public function __construct(
-        private Table $table
-    ) {
+    public function __construct(Table $table) {
+        $this->table = $table;
+
         $this->generators = collect([
             'model'         => ModelGenerator::class,
             'controller'    => ControllerGenerator::class,
@@ -38,32 +40,41 @@ class Generator {
         };
     }
 
-    public function model(): void {
+    public function model(bool $override = false): bool {
         $model = new ModelGenerator($this->table);
 
         $model->loadData();
 
+        if (!$override && $model->fileExists()) return false;
+
         $model->generateFile();
 
         $this->generateEnumsIfNotExists();
+        return true;
     }
 
-    public function controller(): void {
+    public function controller(bool $override = false): bool {
         $controller = new ControllerGenerator($this->table);
 
         $controller->loadData();
+
+        if (!$override && $controller->fileExists()) return false;
 
         $controller->ensureFolderExists();
 
         $controller->generateFile();
 
-        $this->formRequest();
+        $this->formRequest($override);
 
-        $this->resource();
+        $this->resource($override);
+
+        return true;
     }
 
-    public function formRequest(): void {
+    public function formRequest(bool $override = false): bool {
         $formRequest = new FormRequestGenerator($this->table);
+
+        if (!$override && $formRequest->fileExists()) return false;
 
         $formRequest->ensureFolderExists();
 
@@ -72,14 +83,21 @@ class Generator {
         $formRequest->generateFile();
 
         $this->generateEnumsIfNotExists();
+        return true;
     }
 
-    public function resource(): void {
+    public function resource(bool $override = false): bool {
         $resource = new ResourceGenerator($this->table);
+
+        $resource->loadData();
+
+        if (!$override && $resource->fileExists()) return false;
 
         $resource->ensureFolderExists();
 
         $resource->generateFile();
+
+        return true;
     }
 
     public function enums(): void {
@@ -90,7 +108,9 @@ class Generator {
 
     public function typescript() {
         $typescript = new TypescriptGenerator($this->table);
+
         $typescript->ensureFolderExists();
+
         $typescript->generateFile();
     }
 

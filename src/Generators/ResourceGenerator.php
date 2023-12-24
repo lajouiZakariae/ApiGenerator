@@ -27,14 +27,24 @@ class ResourceGenerator implements IGenerator {
     /**
      * Loads neccessary data for the resource
      */
-    function loadData(): void {
+    public function loadData(): void {
         $this->columns =  $this->table->getColumns()->map(fn (Column $column) => (object)['name' => $column->getName()]);
+    }
+
+    /**
+     * Chech File existence
+     * @return bool
+     **/
+    public function fileExists(): bool {
+        $path = app_path('Http/Resources/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getResourceName() . '.php');
+
+        return File::exists($path);
     }
 
     /**
      * Creates the Folder
      */
-    function ensureFolderExists(): void {
+    public function ensureFolderExists(): void {
         if (!is_dir(app_path('Http/Resources'))) mkdir(app_path('Http/Resources'));
 
         $paths = NamespaceResolver::pathsOfFolders();
@@ -48,7 +58,7 @@ class ResourceGenerator implements IGenerator {
     /**
      * Generates the resource file
      */
-    function generateFile(): void {
+    public function generateFile(): void {
         $content =
             view('apigenerator::resource', [
                 "model_name" => $this->model_name,
@@ -57,9 +67,8 @@ class ResourceGenerator implements IGenerator {
                 "columns" => $this->columns
             ])->render();
 
-        File::put(
-            app_path('Http/Resources/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getResourceName() . '.php'),
-            $content
-        );
+        $path = app_path('Http/Resources/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getResourceName() . '.php');
+
+        File::put($path, $content);
     }
 }

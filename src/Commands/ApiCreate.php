@@ -11,7 +11,7 @@ use Zakalajo\ApiGenerator\Generators\Generator;
 use Zakalajo\ApiGenerator\Generators\TypescriptGenerator;
 use Zakalajo\ApiGenerator\NamespaceResolver;
 
-class Scaffold extends Command {
+class ApiCreate extends Command {
     /**
      * The name and signature of the console command.
      *

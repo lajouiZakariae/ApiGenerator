@@ -77,6 +77,16 @@ class ControllerGenerator implements IGenerator {
     }
 
     /**
+     * Chech File existence
+     * @return bool
+     **/
+    public function fileExists(): bool {
+        $path = app_path('Http/Controllers/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getControllerName() . '.php');
+
+        return File::exists($path);
+    }
+
+    /**
      * Creates the Folder
      */
     function ensureFolderExists(): void {
@@ -121,7 +131,9 @@ class ControllerGenerator implements IGenerator {
                 "belongs_to_relations" => $this->belongs_to_relations
             ])->render();
 
-        File::put(app_path('Http/Controllers/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getControllerName() . '.php'), $content);
+        $path = app_path('Http/Controllers/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getControllerName() . '.php');
+
+        File::put($path, $content);
 
         $this->appendRoutes();
     }
