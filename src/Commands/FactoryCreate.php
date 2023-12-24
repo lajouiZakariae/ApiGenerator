@@ -30,27 +30,27 @@ class FactoryCreate extends Command {
     public function handle() {
         $table_name = $this->argument('table');
 
-        $this->option('dir') && str($this->option('dir'))->isNotEmpty()
-            ? NamespaceResolver::setFolder($this->option('dir'))
-            : null;
+        // dump();
 
-        if ($table_name && str($table_name)->isNotEmpty()) {
+        Generator::table('media')->factory(override: true);
 
-            if (!Schema::hasTable($table_name)) {
-                return $this->error('Table Does not exists');
-            }
+        // if ($table_name && str($table_name)->isNotEmpty()) {
 
-            if (!Generator::table($table_name)->model(override: $this->option('override'))) {
-                $this->warn('Factory Already Exists');
-            }
-        } elseif ($this->option('all')) {
-            DBScanner::database(env('DB_DATABASE'))
-                ->getTables()
-                ->each(
-                    fn (Table $table) => Generator::table($table)->model()
-                );
-        } else {
-            $this->warn('Please Provide an option or a table name');
-        }
+        //     if (!Schema::hasTable($table_name)) {
+        //         return $this->error('Table Does not exists');
+        //     }
+
+        //     if (!Generator::table($table_name)->model(override: $this->option('override'))) {
+        //         $this->warn('Factory Already Exists');
+        //     }
+        // } elseif ($this->option('all')) {
+        //     DBScanner::database(env('DB_DATABASE'))
+        //         ->getTables()
+        //         ->each(
+        //             fn (Table $table) => Generator::table($table)->model()
+        //         );
+        // } else {
+        //     $this->warn('Please Provide an option or a table name');
+        // }
     }
 }

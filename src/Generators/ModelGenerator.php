@@ -51,11 +51,11 @@ class ModelGenerator {
         });
 
         if (!$no_relations) {
-            $this->has_many_relations = $this->table->getRelations()->has("has_many")
+            $this->has_many_relations = $this->table->getRelations()->get("has_many")->isNotEmpty()
                 ? $this->table->getRelations()->get("has_many")
                 : null;
 
-            $this->belongs_to_relations = $this->table->getRelations()->has('belongs_to')
+            $this->belongs_to_relations = $this->table->getRelations()->get('belongs_to')->isNotEmpty()
                 ? $this->table->getRelations()->get("belongs_to")
                 : null;
         }

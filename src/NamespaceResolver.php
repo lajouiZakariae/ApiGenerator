@@ -13,7 +13,9 @@ class NamespaceResolver {
 
     private static string $form_requests_namespace = 'App\Http\Requests';
 
-    private static string $resource_namespace = 'App\Http\Resources';
+    private static string $resources_namespace = 'App\Http\Resources';
+
+    private static string $factories_namespace = 'Database\Factories';
 
     /**
      * Sets Folder Relative path with uppercase first for each folder
@@ -72,7 +74,7 @@ class NamespaceResolver {
     /**
      * Full Namespace of model
      */
-    static function modelImport($name): string {
+    static function modelImport(string $name): string {
         return self::model() . '\\' . $name;
     }
 
@@ -89,7 +91,7 @@ class NamespaceResolver {
      * Full Namespace of controller
      * @param string $name
      */
-    static function controllerImport($name): string {
+    static function controllerImport(string $name): string {
         return self::controller() . '\\' . $name;
     }
 
@@ -97,14 +99,14 @@ class NamespaceResolver {
      * Resources Full Namespace
      */
     static function resource(): string {
-        return self::$resource_namespace . self::getFolderNamespace();
+        return self::$resources_namespace . self::getFolderNamespace();
     }
 
     /**
      * Full Namespace of resource
      * @param string $name
      */
-    static function resourceImport($name): string {
+    static function resourceImport(string $name): string {
         return self::resource() . '\\' . $name;
     }
 
@@ -119,7 +121,22 @@ class NamespaceResolver {
      * Full Namespace of form request
      * @param string $name
      */
-    static function formRequestImport($name): string {
+    static function formRequestImport(string $name): string {
         return self::formRequest() . '\\' . $name;
+    }
+
+
+    /**
+     * Models Full Namespace
+     */
+    static function factory(): string {
+        return self::$factories_namespace;
+    }
+
+    /**
+     * Full Namespace of factory
+     */
+    static function factoryImport(string $name): string {
+        return self::factory() . '\\' . $name;
     }
 }
