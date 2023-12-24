@@ -25,7 +25,7 @@ class Table {
     }
 
     function getModelName() {
-        return str($this->name)->singular()->camel()->ucfirst();
+        return str()->modelName($this->name);
     }
 
     function getControllerName() {
@@ -38,6 +38,10 @@ class Table {
 
     function getPostRequestName() {
         return $this->getModelName() . 'PostRequest';
+    }
+
+    function getFactoryName() {
+        return $this->getModelName() . 'Factory';
     }
 
     function getRelations() {

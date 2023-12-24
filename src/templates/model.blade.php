@@ -45,7 +45,7 @@ class {{ $name }} extends Model {
 @if ($hasManyRelations)
 @foreach ($hasManyRelations as $relation)
 {{ "\t" }}public function {{ str($relation->child_table)->camel() }}(): HasMany {
-{{ "\t\t" }}return $this->hasMany({{ str($relation->child_table)->singular()->camel()->ucfirst() }}::class);
+{{ "\t\t" }}return $this->hasMany({{ str()->modelName($relation->child_table) }}::class);
 {{ "\t" }}}
 {{ "\n" }}
 @endforeach
@@ -53,7 +53,7 @@ class {{ $name }} extends Model {
 @if ($belongsToRelations)
 @foreach ($belongsToRelations as $relation)
 {{ "\t" }}public function {{ str($relation->parent_table)->singular()->camel() }}(): BelongsTo {
-{{ "\t\t" }}return $this->belongsTo({{ str($relation->parent_table)->singular()->camel()->ucfirst() }}::class);
+{{ "\t\t" }}return $this->belongsTo({{ str()->modelName($relation->parent_table) }}::class);
 {{ "\t" }}}
 {{ "\n" }}
 @endforeach

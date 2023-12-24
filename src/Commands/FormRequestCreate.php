@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 use Zakalajo\ApiGenerator\Database\DBScanner;
 use Zakalajo\ApiGenerator\Database\Table;
 use Zakalajo\ApiGenerator\Generators\Generator;
+use Zakalajo\ApiGenerator\NamespaceResolver;
 
 class FormRequestCreate extends Command {
     /**
@@ -29,6 +30,10 @@ class FormRequestCreate extends Command {
     public function handle() {
         $table_name = $this->argument('table');
 
+        $this->option('dir') && str($this->option('dir'))->isNotEmpty()
+            ? NamespaceResolver::setFolder($this->option('dir'))
+            : null;
+
         if ($table_name && str($table_name)->isNotEmpty()) {
 
             if (!Schema::hasTable($table_name)) {
@@ -36,7 +41,7 @@ class FormRequestCreate extends Command {
             }
 
             if (!Generator::table($table_name)->formRequest(override: $this->option('override'))) {
-                $this->warn('Resource Already Exists');
+                $this->warn('Request Already Exists');
             }
         } elseif ($this->option('all')) {
 

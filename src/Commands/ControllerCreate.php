@@ -9,20 +9,22 @@ use Zakalajo\ApiGenerator\Database\Table;
 use Zakalajo\ApiGenerator\Generators\Generator;
 use Zakalajo\ApiGenerator\NamespaceResolver;
 
-class ModelCreate extends Command {
+use function PHPSTORM_META\override;
+
+class ControllerCreate extends Command {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'scaff:model {table?} {--all} {--o|override}';
+    protected $signature = 'scaff:controller {table?} {--dir=} {--all} {--o|override}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generates a new model';
+    protected $description = 'Generates a new controller';
 
     /**
      * Execute the console command.
@@ -35,19 +37,21 @@ class ModelCreate extends Command {
             : null;
 
         if ($table_name && str($table_name)->isNotEmpty()) {
-
             if (!Schema::hasTable($table_name)) {
                 return $this->error('Table Does not exists');
             }
 
-            if (!Generator::table($table_name)->model(override: $this->option('override'))) {
-                $this->warn('Model Already Exists');
+            if (!Generator::table($table_name)->controller(override: $this->option('override'))) {
+                $this->warn('Controller Already Exists');
             }
         } elseif ($this->option('all')) {
             DBScanner::database(env('DB_DATABASE'))
                 ->getTables()
                 ->each(
-                    fn (Table $table) => Generator::table($table)->model()
+                    function (Table $table) {
+                        Generator::table($table)
+                            ->controller(override: $this->option('override'));
+                    }
                 );
         } else {
             $this->warn('Please Provide an option or a table name');

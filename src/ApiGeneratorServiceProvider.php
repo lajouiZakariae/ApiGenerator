@@ -9,8 +9,10 @@ use Zakalajo\ApiGenerator\Commands\FormRequestCreate;
 use Zakalajo\ApiGenerator\Commands\ModelCreate;
 use Zakalajo\ApiGenerator\Commands\ResourceCreate;
 use Zakalajo\ApiGenerator\Commands\UserCreate;
+use Illuminate\Support\Str;
+use Zakalajo\ApiGenerator\Commands\ControllerCreate;
 
-class ApiGenerator extends ServiceProvider {
+class ApiGeneratorServiceProvider extends ServiceProvider {
     /**
      * Register services.
      */
@@ -22,6 +24,10 @@ class ApiGenerator extends ServiceProvider {
      * Bootstrap services.
      */
     public function boot(): void {
+        Str::macro('modelName', function ($string) {
+            return str($string)->singular()->camel()->ucfirst();
+        });
+
         $this->loadViewsFrom(__DIR__ . '/templates', 'apigenerator');
 
         $this->commands([
@@ -30,6 +36,7 @@ class ApiGenerator extends ServiceProvider {
             ResourceCreate::class,
             ModelCreate::class,
             FormRequestCreate::class,
+            ControllerCreate::class,
         ]);
     }
 }

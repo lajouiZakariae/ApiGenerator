@@ -66,7 +66,7 @@ class NamespaceResolver {
      * Models Full Namespace
      */
     static function model(): string {
-        return self::$models_namespace . self::getFolderNamespace();
+        return self::$models_namespace;
     }
 
     /**

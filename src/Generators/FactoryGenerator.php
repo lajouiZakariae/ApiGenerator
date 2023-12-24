@@ -8,7 +8,7 @@ use Zakalajo\ApiGenerator\Interfaces\IGenerator;
 use Zakalajo\ApiGenerator\NamespaceResolver;
 use Zakalajo\ApiGenerator\Database\Table;
 
-class ControllerGenerator implements IGenerator {
+class FactoryGenerator implements IGenerator {
     private Table $table;
 
     private string $controller_name;
@@ -37,42 +37,9 @@ class ControllerGenerator implements IGenerator {
     function loadData(): void {
         $this->resource_name = $this->table->getResourceName();
 
-        $this->form_request_name = $this->table->getPostRequestName();
+        $this->form_request_name = $this->table->getFactoryName();
 
         if ($this->table->getRelations()->has('belongs_to')) {
-            $this->routes_as_strings = collect();
-
-            $this->belongs_to_relations = $this->table->getRelations()->get('belongs_to')->map(function ($relation) {
-                $method_name =  str($relation->parent_table)
-                    ->singular()
-                    ->append(str($relation->child_table)->camel()->ucfirst());
-
-                $parent_model_name = str($relation->parent_table)->singular()->camel()->ucfirst();
-
-                $parent_variable_name = str($parent_model_name)->snake()->lower();
-
-                $route = str($relation->parent_table)
-                    ->append("/{")
-                    ->append($parent_variable_name)
-                    ->append("}/")
-                    ->append($relation->child_table);
-
-                $controller_method = str('[')
-                    ->append(NamespaceResolver::controllerImport($this->controller_name))
-                    ->append('::class, ')
-                    ->append("'$method_name'")
-                    ->append(']');
-
-                $this->routes_as_strings->add("Route::get('$route', $controller_method);\n\n");
-
-                return ((object)[
-                    'model_import' => NamespaceResolver::modelImport($parent_model_name),
-                    'method_name' => $method_name,
-                    'parent_model_name' => $parent_model_name,
-                    'parent_variable_name' => $parent_variable_name,
-                    'relation_method_name' => str($relation->child_table)->camel(),
-                ]);
-            });
         }
     }
 
@@ -82,9 +49,6 @@ class ControllerGenerator implements IGenerator {
      **/
     public function fileExists(): bool {
         $path = app_path('Http/Controllers/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getControllerName() . '.php');
-
-        dump($path);
-        dump(File::exists($path));
 
         return File::exists($path);
     }

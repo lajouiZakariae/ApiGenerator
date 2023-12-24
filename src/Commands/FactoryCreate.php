@@ -3,6 +3,11 @@
 namespace Zakalajo\ApiGenerator\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
+use Zakalajo\ApiGenerator\Database\DBScanner;
+use Zakalajo\ApiGenerator\Database\Table;
+use Zakalajo\ApiGenerator\Generators\Generator;
+use Zakalajo\ApiGenerator\NamespaceResolver;
 
 class FactoryCreate extends Command {
     /**
@@ -10,7 +15,7 @@ class FactoryCreate extends Command {
      *
      * @var string
      */
-    protected $signature = 'scaff:factory';
+    protected $signature = 'scaff:factory {table?} {--all} {--o|override}';
 
     /**
      * The console command description.
@@ -23,6 +28,29 @@ class FactoryCreate extends Command {
      * Execute the console command.
      */
     public function handle() {
-        //
+        $table_name = $this->argument('table');
+
+        $this->option('dir') && str($this->option('dir'))->isNotEmpty()
+            ? NamespaceResolver::setFolder($this->option('dir'))
+            : null;
+
+        if ($table_name && str($table_name)->isNotEmpty()) {
+
+            if (!Schema::hasTable($table_name)) {
+                return $this->error('Table Does not exists');
+            }
+
+            if (!Generator::table($table_name)->model(override: $this->option('override'))) {
+                $this->warn('Factory Already Exists');
+            }
+        } elseif ($this->option('all')) {
+            DBScanner::database(env('DB_DATABASE'))
+                ->getTables()
+                ->each(
+                    fn (Table $table) => Generator::table($table)->model()
+                );
+        } else {
+            $this->warn('Please Provide an option or a table name');
+        }
     }
 }

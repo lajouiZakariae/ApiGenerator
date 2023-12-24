@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 use Zakalajo\ApiGenerator\Database\DBScanner;
 use Zakalajo\ApiGenerator\Database\Table;
 use Zakalajo\ApiGenerator\Generators\Generator;
+use Zakalajo\ApiGenerator\NamespaceResolver;
 
 use function PHPSTORM_META\override;
 
@@ -30,6 +31,10 @@ class ResourceCreate extends Command {
      */
     public function handle() {
         $table_name = $this->argument('table');
+
+        $this->option('dir') && str($this->option('dir'))->isNotEmpty()
+            ? NamespaceResolver::setFolder($this->option('dir'))
+            : null;
 
         if ($table_name && str($table_name)->isNotEmpty()) {
             if (!Schema::hasTable($table_name)) {
