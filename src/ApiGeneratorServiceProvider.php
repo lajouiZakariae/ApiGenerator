@@ -10,6 +10,7 @@ use Zakalajo\ApiGenerator\Commands\ResourceCreate;
 use Zakalajo\ApiGenerator\Commands\UserCreate;
 use Illuminate\Support\Str;
 use Zakalajo\ApiGenerator\Commands\ControllerCreate;
+use Zakalajo\ApiGenerator\Commands\FactoryCreate;
 
 class ApiGeneratorServiceProvider extends ServiceProvider {
     /**
