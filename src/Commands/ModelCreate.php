@@ -15,7 +15,7 @@ class ModelCreate extends Command {
      *
      * @var string
      */
-    protected $signature = 'scaff:model {table?} {--all} {--o|override}';
+    protected $signature = 'scaff:model {table?} {--dir=} {--all} {--o|override}';
 
     /**
      * The console command description.

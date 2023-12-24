@@ -3,9 +3,9 @@
 namespace Zakalajo\ApiGenerator\Generators;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Zakalajo\ApiGenerator\Database\Column;
 use Zakalajo\ApiGenerator\Database\Table;
+use Zakalajo\ApiGenerator\Generators\FactoryGenerator;
 
 use function Laravel\Prompts\info;
 
@@ -48,6 +48,19 @@ class Generator {
         if (!$override && $model->fileExists()) return false;
 
         $model->generateFile();
+
+        $this->generateEnumsIfNotExists();
+        return true;
+    }
+
+    public function factory(bool $override = false): bool {
+        $factory = new FactoryGenerator($this->table);
+
+        $factory->loadData();
+
+        if (!$override && $factory->fileExists()) return false;
+
+        $factory->generateFile();
 
         $this->generateEnumsIfNotExists();
         return true;
