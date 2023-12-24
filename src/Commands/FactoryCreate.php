@@ -15,7 +15,7 @@ class FactoryCreate extends Command {
      *
      * @var string
      */
-    protected $signature = 'scaff:factory {table?} {--all} {--o|override}';
+    protected $signature = 'scaff:factory {table?} {--all} {--dir=} {--o|override}';
 
     /**
      * The console command description.
@@ -30,27 +30,28 @@ class FactoryCreate extends Command {
     public function handle() {
         $table_name = $this->argument('table');
 
-        // dump();
+        $this->option('dir') && str($this->option('dir'))->isNotEmpty()
+            ? NamespaceResolver::setFolder($this->option('dir'))
+            : null;
 
-        Generator::table('media')->factory(override: true);
+        if ($table_name && str($table_name)->isNotEmpty()) {
 
-        // if ($table_name && str($table_name)->isNotEmpty()) {
+            if (!Schema::hasTable($table_name)) {
+                return $this->error('Table Does not exists');
+            }
 
-        //     if (!Schema::hasTable($table_name)) {
-        //         return $this->error('Table Does not exists');
-        //     }
+            if (!Generator::table($table_name)->factory(override: $this->option('override'))) {
+                $this->warn('Factory Already Exists');
+            }
+        } elseif ($this->option('all')) {
 
-        //     if (!Generator::table($table_name)->model(override: $this->option('override'))) {
-        //         $this->warn('Factory Already Exists');
-        //     }
-        // } elseif ($this->option('all')) {
-        //     DBScanner::database(env('DB_DATABASE'))
-        //         ->getTables()
-        //         ->each(
-        //             fn (Table $table) => Generator::table($table)->model()
-        //         );
-        // } else {
-        //     $this->warn('Please Provide an option or a table name');
-        // }
+            DBScanner::database(env('DB_DATABASE'))
+                ->getTables()
+                ->each(
+                    fn (Table $table) => Generator::table($table)->factory()
+                );
+        } else {
+            $this->warn('Please Provide an option or a table name');
+        }
     }
 }
