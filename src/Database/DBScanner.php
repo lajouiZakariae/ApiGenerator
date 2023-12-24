@@ -12,7 +12,7 @@ class DBScanner {
     /** @var Collection<Table> $tables */
     private Collection $tables;
 
-    private $ignored_tables = ["users", 'failed_jobs', 'migrations', 'personal_access_tokens', 'password_reset_tokens'];
+    private array $ignored_tables = ["users", 'failed_jobs', 'migrations', 'personal_access_tokens', 'password_reset_tokens'];
 
     public function __construct(string $database) {
         $this->database = $database;

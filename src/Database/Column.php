@@ -12,8 +12,6 @@ class Column {
 
     private string $type;
 
-    private array $numeric_types = ['tinyint', 'smallint', 'mediumint', 'int', 'bigint', 'bit', 'float', 'double', 'decimal'];
-
     private bool $nullable;
 
     private mixed $default_value;
@@ -36,9 +34,45 @@ class Column {
 
     private bool $is_foreign;
 
-    public  ?object $foreign = null;
+    private  ?object $foreign = null;
 
-    public  ?Collection $has_many = null;
+    private  ?Collection $has_many = null;
+
+    public function __construct(string $table, $object) {
+        $this->table = $table;
+
+        $this->name = $object->COLUMN_NAME;
+
+        $this->type = $object->DATA_TYPE;
+
+        $this->default_value = $object->COLUMN_DEFAULT;
+
+        $this->char_max_length = $object->CHARACTER_MAXIMUM_LENGTH;
+
+        $this->max_length = intval(substr($object->COLUMN_TYPE, strpos($object->COLUMN_TYPE, '(') + 1, -1));
+
+        $this->nullable = $object->IS_NULLABLE === 'YES';
+
+        /* Numeric Values */
+        $this->increments = $object->EXTRA === 'auto_increment';
+
+        $this->numeric_scale = $object->NUMERIC_SCALE;
+
+        $this->numeric_precision = $object->NUMERIC_PRECISION;
+
+        $this->allowed_values = in_array($this->type, ['enum', 'set']) ? $this->extractValuesFromType($object->COLUMN_TYPE) : null;
+
+        $this->unsigned = str_contains($object->COLUMN_TYPE, 'unsigned');
+
+        /* Keys */
+        $this->is_primary = $object->COLUMN_KEY === 'PRI';
+
+        $this->is_foreign = $object->COLUMN_KEY === 'MUL';
+
+        if ($this->is_foreign) $this->loadForeignKey();
+
+        if ($this->is_primary) $this->loadHasManyRelations();
+    }
 
     function isPrimary(): bool {
         return $this->is_primary;
@@ -88,74 +122,22 @@ class Column {
         return $this->unsigned;
     }
 
-    /**
-     * if the data is a textual data type
-     */
     function isTextual(): bool {
         return in_array($this->type, ['varchar', 'char', 'smalltext', 'longtext', 'tinytext', 'text']);
     }
-
-    /**
-     * if the data is a float|double|decimal
-     */
 
     function isFloat(): bool {
         return in_array($this->type, ['float', 'double', 'decimal']);
     }
 
-    /**
-     * if the data is an integer data type
-     */
     function isInteger(): bool {
         return $this->type === 'int';
     }
 
-    /**
-     * if the data is an integer data type
-     */
     function isBigInt(): bool {
         return $this->type === 'bigint';
     }
 
-    public function __construct(string $table, $object) {
-        $this->table = $table;
-
-        $this->name = $object->COLUMN_NAME;
-
-        $this->type = $object->DATA_TYPE;
-
-        $this->default_value = $object->COLUMN_DEFAULT;
-
-        $this->char_max_length = $object->CHARACTER_MAXIMUM_LENGTH;
-
-        $this->max_length = intval(substr($object->COLUMN_TYPE, strpos($object->COLUMN_TYPE, '(') + 1, -1));
-
-        $this->nullable = $object->IS_NULLABLE === 'YES';
-
-        /* Numeric Values */
-        $this->numeric_scale = $object->NUMERIC_SCALE;
-
-        $this->numeric_precision = $object->NUMERIC_PRECISION;
-
-        $this->increments = $object->EXTRA === 'auto_increment';
-
-        $this->allowed_values = in_array($this->type, ['enum', 'set']) ? $this->extractValuesFromType($object->COLUMN_TYPE) : null;
-
-        $this->unsigned = str_contains($object->COLUMN_TYPE, 'unsigned');
-
-        /* Keys */
-        $this->is_primary = $object->COLUMN_KEY === 'PRI';
-
-        $this->is_foreign = $object->COLUMN_KEY === 'MUL';
-
-        if ($this->is_foreign) $this->loadForeignKey();
-
-        if ($this->is_primary) $this->loadHasManyRelations();
-    }
-
-    /**
-     * Sets the foreign key
-     */
     private function loadForeignKey(): void {
         $result = DB::table('INFORMATION_SCHEMA.KEY_COLUMN_USAGE')
             ->where('TABLE_SCHEMA', env('DB_DATABASE'))
@@ -200,33 +182,11 @@ class Column {
     }
 
     /**
-     * Extract allowed values from 
+     * Extract allowed values for sets and enums
      */
     private function extractValuesFromType(string $type): Collection {
         return str($type)
             ->substr(strpos($type, '(') + 2, -2)
             ->explode("','");
-
-        // $found = false;
-        // $values = [];
-        // $value = '';
-
-        // for ($i = 0; $i < strlen($this->allowed_values); $i++) {
-        //     $char = $this->allowed_values[$i];
-        //     if ($char === "'" && ($char !== "\\")) {
-        //         $found = !$found;
-        //         if ($i === (strlen($this->allowed_values) - 1)) {
-        //             $values[] = $value;
-        //             $value = '';
-        //         }
-        //     } elseif ($found) {
-        //         $value .= $char;
-        //         var_dump($char);
-        //     } else {
-        //         $values[] = $value;
-        //         $value = '';
-        //     }
-        // }
-
     }
 }
