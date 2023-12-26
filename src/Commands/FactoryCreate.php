@@ -48,7 +48,9 @@ class FactoryCreate extends Command {
             DBScanner::database(env('DB_DATABASE'))
                 ->getTables()
                 ->each(
-                    fn (Table $table) => Generator::table($table)->factory()
+                    function (Table $table) {
+                        Generator::table($table)->factory();
+                    }
                 );
         } else {
             $this->warn('Please Provide an option or a table name');

@@ -48,7 +48,9 @@ class ResourceCreate extends Command {
             DBScanner::database(env('DB_DATABASE'))
                 ->getTables()
                 ->each(
-                    fn (Table $table) => Generator::table($table)->resource()
+                    function (Table $table) {
+                        Generator::table($table)->resource();
+                    }
                 );
         } else {
             $this->warn('Please Provide an option or a table name');

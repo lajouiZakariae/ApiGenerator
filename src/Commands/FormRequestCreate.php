@@ -48,7 +48,9 @@ class FormRequestCreate extends Command {
             DBScanner::database(env('DB_DATABASE'))
                 ->getTables()
                 ->each(
-                    fn (Table $table) => Generator::table($table)->formRequest()
+                    function (Table $table) {
+                        Generator::table($table)->formRequest();
+                    }
                 );
         } else {
             $this->warn('Please Provide an option or a table name');
