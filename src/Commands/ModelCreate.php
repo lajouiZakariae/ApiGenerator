@@ -47,7 +47,9 @@ class ModelCreate extends Command {
             DBScanner::database(env('DB_DATABASE'))
                 ->getTables()
                 ->each(
-                    fn (Table $table) => Generator::table($table)->model()
+                    function (Table $table) {
+                        Generator::table($table)->model(override: $this->option('override'));
+                    }
                 );
         } else {
             $this->warn('Please Provide an option or a table name');

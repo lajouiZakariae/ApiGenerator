@@ -83,9 +83,6 @@ class ControllerGenerator implements IGenerator {
     public function fileExists(): bool {
         $path = app_path('Http/Controllers/' . NamespaceResolver::getFolderPath() . '/' . $this->table->getControllerName() . '.php');
 
-        dump($path);
-        dump(File::exists($path));
-
         return File::exists($path);
     }
 
