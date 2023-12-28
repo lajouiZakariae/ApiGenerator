@@ -48,6 +48,14 @@ The scaff:api will generate all of the components needed for an api:
 -   Form request
 -   Controller
 
+You can provide a table name to generate the components for a single table or the --all option to generate for the entire database.
+
+Alternatively, you can provide the --enums option and the package will generate all the enums found in table columns, or you can provide the --types option to generate Typescript types.
+
+Note:
+The generated enums will be found in the app\Enums folder.
+The generated types will be found in the types\index.ts file.
+
 ### scaff:user
 
 The scaff:user will generate a random user using the user Factory and outputs the email of the random user.

@@ -34,7 +34,6 @@ class ApiCreate extends Command
      */
     public function handle()
     {
-
         $this->option('dir') && str($this->option('dir'))->isNotEmpty()
             ? NamespaceResolver::setFolder($this->option('dir'))
             : null;
