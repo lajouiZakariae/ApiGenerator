@@ -10,7 +10,8 @@ use {{ $import }};
 @endif
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-final class {{ $factory_name }} extends Factory {
+final class {{ $factory_name }} extends Factory
+{
     /**
      * The name of the factory's corresponding model.
      *
@@ -23,7 +24,8 @@ final class {{ $factory_name }} extends Factory {
      *
      * @return array
      */
-    public function definition(): array {
+    public function definition(): array
+    {
         return [
 @if ($columns_with_factories)
 @foreach ($columns_with_factories as $column => $factory)

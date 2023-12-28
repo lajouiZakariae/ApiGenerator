@@ -7,11 +7,13 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 @endif
 
-class {{ $form_request_name }} extends FormRequest {
+class {{ $form_request_name }} extends FormRequest
+{
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool {
+    public function authorize(): bool
+    {
         return true;
     }
 
@@ -20,7 +22,8 @@ class {{ $form_request_name }} extends FormRequest {
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array {
+    public function rules(): array
+    {
         @if ($validation_rules)
 return [
 @foreach ($validation_rules as $name => $rules)

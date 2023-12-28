@@ -55,7 +55,7 @@ class EnumGenerator
      */
     function toPhp(): string
     {
-        $enum = "enum " . $this->getName() . " {\n";
+        $enum = "enum " . $this->getName() . ": string \n{\n";
 
         $enum .= $this->values
             ->map(

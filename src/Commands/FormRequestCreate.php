@@ -9,13 +9,14 @@ use Zakalajo\ApiGenerator\Database\Table;
 use Zakalajo\ApiGenerator\Generators\Generator;
 use Zakalajo\ApiGenerator\NamespaceResolver;
 
-class FormRequestCreate extends Command {
+class FormRequestCreate extends Command
+{
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'scaff:request {table?} {--all} {--o|override}';
+    protected $signature = 'scaff:request {table?} {--dir=}{--all} {--o|override}';
 
     /**
      * The console command description.
@@ -27,7 +28,8 @@ class FormRequestCreate extends Command {
     /**
      * Execute the console command.
      */
-    public function handle() {
+    public function handle()
+    {
         $table_name = $this->argument('table');
 
         $this->option('dir') && str($this->option('dir'))->isNotEmpty()

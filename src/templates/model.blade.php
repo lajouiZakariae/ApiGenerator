@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 @endif
 
-class {{ $name }} extends Model {
+class {{ $name }} extends Model
+{
     use HasFactory;
 
 @if ($fillables)
@@ -44,7 +45,8 @@ class {{ $name }} extends Model {
 
 @if ($hasManyRelations)
 @foreach ($hasManyRelations as $relation)
-{{ "\t" }}public function {{ str($relation->child_table)->camel() }}(): HasMany {
+{{ "\t" }}public function {{ str($relation->child_table)->camel() }}(): HasMany
+    {
 {{ "\t\t" }}return $this->hasMany({{ str()->modelName($relation->child_table) }}::class);
 {{ "\t" }}}
 {{ "\n" }}
@@ -52,7 +54,8 @@ class {{ $name }} extends Model {
 @endif
 @if ($belongsToRelations)
 @foreach ($belongsToRelations as $relation)
-{{ "\t" }}public function {{ str($relation->parent_table)->singular()->camel() }}(): BelongsTo {
+{{ "\t" }}public function {{ str($relation->parent_table)->singular()->camel() }}(): BelongsTo
+    {
 {{ "\t\t" }}return $this->belongsTo({{ str()->modelName($relation->parent_table) }}::class);
 {{ "\t" }}}
 {{ "\n" }}
