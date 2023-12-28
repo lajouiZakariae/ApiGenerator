@@ -7,14 +7,16 @@ use Illuminate\Support\Facades\File;
 use Zakalajo\ApiGenerator\Database\Column;
 
 
-class EnumGenerator {
+class EnumGenerator
+{
     protected string $name;
 
     protected Collection $values;
 
     protected Column $column;
 
-    public function __construct(string $name, Collection $values) {
+    public function __construct(string $name, Collection $values)
+    {
         $this->name = $name;
         $this->values = $values;
     }
@@ -23,7 +25,8 @@ class EnumGenerator {
      * get the name
      * @return string
      */
-    public function getName(): string {
+    public function getName(): string
+    {
         return str($this->name)->camel()->ucfirst();
     }
 
@@ -33,7 +36,8 @@ class EnumGenerator {
      * @param Collection $values
      * @return string
      */
-    function toTypescript(): string {
+    function toTypescript(): string
+    {
         $enum = "export enum " . $this->getName() . " {\n";
 
         $enum .= $this->values
@@ -49,12 +53,13 @@ class EnumGenerator {
      * @param Collection $values
      * @return string
      */
-    function toPhp(): string {
+    function toPhp(): string
+    {
         $enum = "enum " . $this->getName() . " {\n";
 
         $enum .= $this->values
             ->map(
-                fn ($value) => "\tconst " . str($value)->snake()->upper() . " = \"" . $value . "\";\n"
+                fn ($value) => "\tcase " . str($value)->snake()->upper() . " = \"" . $value . "\";\n"
             )->implode("\n");
 
         return $enum . "}\n";
@@ -66,7 +71,8 @@ class EnumGenerator {
      * @param Collection $values
      * @return string
      */
-    public static function typescript(string $name, Collection $values): string {
+    public static function typescript(string $name, Collection $values): string
+    {
         $instance = new self($name, $values);
         return $instance->toTypescript();
     }
@@ -77,7 +83,8 @@ class EnumGenerator {
      * @param Collection $values
      * @return string
      */
-    public static function php(string $name, Collection $values) {
+    public static function php(string $name, Collection $values)
+    {
         $instance = new self($name, $values);
         return $instance->toPhp();
     }
@@ -85,7 +92,8 @@ class EnumGenerator {
     /**
      * Generates Enum File
      */
-    public static function generatePhpFile(string $name, Collection $values) {
+    public static function generatePhpFile(string $name, Collection $values)
+    {
         if (!is_dir(app_path('Enums'))) mkdir(app_path('Enums'));
 
         $instance = new self($name, $values);
@@ -104,7 +112,8 @@ class EnumGenerator {
      * @param Collection<Column> $columns Description
      * @return void
      **/
-    public static function generatePhpFiles($columns) {
+    public static function generatePhpFiles($columns)
+    {
         $columns->each(function (Column $column) {
             self::generatePhpFile(
                 $column->getName(),
