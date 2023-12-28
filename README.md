@@ -4,9 +4,9 @@ A basic laravel package that generates models, resources, controllers, form requ
 
 ## Installation
 
-<code>
+```sh
     composer require zakalajo/api-generator --dev
-</code>
+```
 
 ## Utilities
 
