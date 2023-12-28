@@ -18,7 +18,7 @@ class ResourceCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'scaff:resource {table?} {--dir=} {--all} {--o|override}';
+    protected $signature = 'scaff:resource {table?} {--dir=} {--all} {--O|override}';
 
     /**
      * The console command description.

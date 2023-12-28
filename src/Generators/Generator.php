@@ -9,7 +9,8 @@ use Zakalajo\ApiGenerator\Generators\FactoryGenerator;
 
 use function Laravel\Prompts\info;
 
-class Generator {
+class Generator
+{
     private Table $table;
 
     private Collection $generators;
@@ -18,7 +19,8 @@ class Generator {
 
     private bool $enums_generated = false;
 
-    public function __construct(Table $table) {
+    public function __construct(Table $table)
+    {
         $this->table = $table;
 
         $this->generators = collect([
@@ -29,18 +31,21 @@ class Generator {
         ]);
     }
 
-    private function hasEnumColumns(): bool {
+    private function hasEnumColumns(): bool
+    {
         return $this->table->getColumns()->contains(fn (Column $column) => $column->isEnum());
     }
 
-    private function generateEnumsIfNotExists(): void {
+    private function generateEnumsIfNotExists(): void
+    {
         if ($this->hasEnumColumns() && $this->enums_generated === false) {
             $this->enums();
             $this->enums_generated = true;
         };
     }
 
-    public function model(bool $override = false): bool {
+    public function model(bool $override = false): bool
+    {
         $model = new ModelGenerator($this->table);
 
         $model->loadData();
@@ -53,7 +58,8 @@ class Generator {
         return true;
     }
 
-    public function factory(bool $override = false): bool {
+    public function factory(bool $override = false): bool
+    {
         $factory = new FactoryGenerator($this->table);
 
         $factory->loadData();
@@ -66,7 +72,8 @@ class Generator {
         return true;
     }
 
-    public function controller(bool $override = false): bool {
+    public function controller(bool $override = false): bool
+    {
         $controller = new ControllerGenerator($this->table);
 
         $controller->loadData();
@@ -84,7 +91,8 @@ class Generator {
         return true;
     }
 
-    public function formRequest(bool $override = false): bool {
+    public function formRequest(bool $override = false): bool
+    {
         $formRequest = new FormRequestGenerator($this->table);
 
         if (!$override && $formRequest->fileExists()) return false;
@@ -99,7 +107,8 @@ class Generator {
         return true;
     }
 
-    public function resource(bool $override = false): bool {
+    public function resource(bool $override = false): bool
+    {
         $resource = new ResourceGenerator($this->table);
 
         $resource->loadData();
@@ -113,13 +122,15 @@ class Generator {
         return true;
     }
 
-    public function enums(): void {
+    public function enums(): void
+    {
         $enum_columns = $this->table->getColumns()->filter(fn (Column $column) => $column->isEnum());
 
         $enum_columns->isNotEmpty() ? EnumGenerator::generatePhpFiles($enum_columns) : null;
     }
 
-    public function typescript() {
+    public function typescript()
+    {
         $typescript = new TypescriptGenerator($this->table);
 
         $typescript->ensureFolderExists();
@@ -127,23 +138,32 @@ class Generator {
         $typescript->generateFile();
     }
 
-    public function all(): void {
-        $this->generators->each(function ($generator_class, $name) {
+    public function all(bool $override = false): void
+    {
+        $this->generators->each(function ($generator_class, $name) use ($override) {
             $generator = new $generator_class($this->table);
 
-            if (method_exists($generator_class, 'loadData')) $generator->loadData();
+            if (method_exists($generator_class, 'loadData')) {
+                $generator->loadData();
+            }
 
-            if (method_exists($generator_class, 'ensureFolderExists')) $generator->ensureFolderExists();
+            if ($override || !$generator->fileExists()) {
 
-            $generator->generateFile();
+                if (method_exists($generator_class, 'ensureFolderExists')) {
+                    $generator->ensureFolderExists();
+                };
 
-            info('Generating ' . $this->table->getName() . " " . str($name)->replace('_', ' ')->title());
+                $generator->generateFile();
+
+                info('Generating ' . $this->table->getName() . " " . str($name)->replace('_', ' ')->title());
+            };
         });
 
         $this->generateEnumsIfNotExists();
     }
 
-    public static function table(Table|string $table): self {
+    public static function table(Table|string $table): self
+    {
 
         $table_name = $table instanceof Table ? $table->getName() : $table;
 

@@ -11,13 +11,14 @@ use Zakalajo\ApiGenerator\NamespaceResolver;
 
 use function PHPSTORM_META\override;
 
-class ControllerCreate extends Command {
+class ControllerCreate extends Command
+{
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'scaff:controller {table?} {--dir=} {--all} {--o|override}';
+    protected $signature = 'scaff:controller {table?} {--dir=} {--all} {--O|override}';
 
     /**
      * The console command description.
@@ -29,7 +30,8 @@ class ControllerCreate extends Command {
     /**
      * Execute the console command.
      */
-    public function handle() {
+    public function handle()
+    {
         $table_name = $this->argument('table');
 
         $this->option('dir') && str($this->option('dir'))->isNotEmpty()

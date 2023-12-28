@@ -11,13 +11,16 @@ use Zakalajo\ApiGenerator\Generators\Generator;
 use Zakalajo\ApiGenerator\Generators\TypescriptGenerator;
 use Zakalajo\ApiGenerator\NamespaceResolver;
 
-class ApiCreate extends Command {
+use function PHPSTORM_META\override;
+
+class ApiCreate extends Command
+{
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'scaff:api {table?} {--dir=} {--types} {--enums}';
+    protected $signature = 'scaff:api {table?} {--dir=} {--types} {--enums} {--O|override}';
 
     /**
      * The console command description.
@@ -29,7 +32,8 @@ class ApiCreate extends Command {
     /**
      * Execute the console command.
      */
-    public function handle() {
+    public function handle()
+    {
 
         $this->option('dir') && str($this->option('dir'))->isNotEmpty()
             ? NamespaceResolver::setFolder($this->option('dir'))
@@ -47,7 +51,7 @@ class ApiCreate extends Command {
             $tables = DBScanner::database(env('DB_DATABASE'))->getTables();
 
             $tables->each(
-                fn (Table|string $table) => Generator::table($table)->all()
+                fn (Table|string $table) => Generator::table($table)->all(override: $this->option('override'))
             );
 
             TypescriptGenerator::generateAll($tables);

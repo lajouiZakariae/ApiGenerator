@@ -16,7 +16,7 @@ class FormRequestCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'scaff:request {table?} {--dir=}{--all} {--o|override}';
+    protected $signature = 'scaff:request {table?} {--dir=}{--all} {--O|override}';
 
     /**
      * The console command description.

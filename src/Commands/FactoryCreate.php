@@ -9,13 +9,14 @@ use Zakalajo\ApiGenerator\Database\Table;
 use Zakalajo\ApiGenerator\Generators\Generator;
 use Zakalajo\ApiGenerator\NamespaceResolver;
 
-class FactoryCreate extends Command {
+class FactoryCreate extends Command
+{
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'scaff:factory {table?} {--all} {--dir=} {--o|override}';
+    protected $signature = 'scaff:factory {table?} {--all} {--dir=} {--O|override}';
 
     /**
      * The console command description.
@@ -27,7 +28,8 @@ class FactoryCreate extends Command {
     /**
      * Execute the console command.
      */
-    public function handle() {
+    public function handle()
+    {
         $table_name = $this->argument('table');
 
         $this->option('dir') && str($this->option('dir'))->isNotEmpty()
