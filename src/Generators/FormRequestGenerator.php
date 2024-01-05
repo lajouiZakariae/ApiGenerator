@@ -10,7 +10,8 @@ use Zakalajo\ApiGenerator\Database\Table;
 use Zakalajo\ApiGenerator\Database\Column;
 
 
-class FormRequestGenerator implements IGenerator {
+class FormRequestGenerator implements IGenerator
+{
     private Table $table;
 
     private string $form_request_name;
@@ -19,7 +20,8 @@ class FormRequestGenerator implements IGenerator {
 
     private bool $should_import_rule_class = false;
 
-    public function __construct(Table $table) {
+    public function __construct(Table $table)
+    {
         $this->table = $table;
 
         $this->form_request_name = $this->table->getPostRequestName();
@@ -30,50 +32,14 @@ class FormRequestGenerator implements IGenerator {
     /**
      * Loads neccessary data for the form request
      */
-    function loadData(): void {
+    function loadData(): void
+    {
         $this->table
             ->getColumns()
             ->filter(fn (Column $column) => !in_array($column->getName(), ['id', 'created_at', 'updated_at']))
             ->each(function (Column $column) {
-                $rules = collect([]);
-
-                $column->isNullable() ? $rules->add("'nullable'") : $rules->add("'required'");
-
-                if ($column->getType() === "tinyint" && $column->getMaxLength() === 1) // will stop here
-                    return $rules->add('boolean');
-
-                if ($column->getType() === 'enum') {
-                    $this->should_import_rule_class = true;
-                    return $rules->add("Rule::enum(\App\\Enums\\" . str($column->getName())->camel()->ucfirst() . "::class)");
-                }
-
-                if ($column->isForeign()) {
-                    return $rules->add("'exists:" . $column->getForeign()->parent_table . ',' . $column->getForeign()->parent_column . "'");
-                }
-
-                if ($column->isFloat()) {
-                    $rules->add("'numeric'");
-                }
-
-                if ($column->isInteger()) {
-                    $rules->add("'integer'");
-                    $rules->add("'min:" . ($column->isUnSigned() ? 0 : -2_147_483_648) . "'");
-                    $rules->add("'max:" . ($column->isUnSigned() ? 4_294_967_295 : 2_147_483_647) . "'");
-                }
-
-                if ($column->isBigInt()) {
-                    $rules->add("'integer'");
-                    $rules->add("'min:" . ($column->isUnSigned() ? 0 : -9_223_372_036_854_775_808) . "'");
-                    $rules->add("'max:" . ($column->isUnSigned() ? 18_446_744_073_709_551_615 : 9_223_372_036_854_775_807) . "'");
-                }
-
-                if ($column->isTextual()) {
-                    $rules->add("'string'");
-                    $rules->add("'min:1'");
-                    $rules->add("'max:" . $column->getCharMexLength() . "'");
-                };
-
-                $this->validation_rules->put($column->getName(), $rules);
+                $validation_rules = ValidationRules::resolve($column);
+                $this->validation_rules->put($column->getName(), $validation_rules);
             });
     }
 
@@ -81,7 +47,8 @@ class FormRequestGenerator implements IGenerator {
      * Chech File existence
      * @return bool
      **/
-    public function fileExists(): bool {
+    public function fileExists(): bool
+    {
         $path = app_path('Http/Requests/' . NamespaceResolver::getFolderPath() . "/" . $this->table->getPostRequestName() . '.php');
 
         return File::exists($path);
@@ -90,7 +57,8 @@ class FormRequestGenerator implements IGenerator {
     /**
      * Creates Form Requests folder
      */
-    function ensureFolderExists(): void {
+    function ensureFolderExists(): void
+    {
         if (!is_dir(app_path('Http/Requests'))) mkdir(app_path('Http/Requests'));
 
         $paths = NamespaceResolver::pathsOfFolders();
@@ -104,7 +72,8 @@ class FormRequestGenerator implements IGenerator {
     /**
      * Generates the form request file
      */
-    function generateFile(): void {
+    function generateFile(): void
+    {
         $stringified_rules = $this->validation_rules->isNotEmpty()
             ? $this->validation_rules->map(function (Collection $rules) {
                 return "[" . $rules->implode(", ") . "]";

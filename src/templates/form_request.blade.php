@@ -3,9 +3,7 @@
 namespace {{ $form_request_namespace }};
 
 use Illuminate\Foundation\Http\FormRequest;
-@if ($should_import_rule_class)
 use Illuminate\Validation\Rule;
-@endif
 
 class {{ $form_request_name }} extends FormRequest
 {
