@@ -39,10 +39,7 @@ class FormRequestGenerator implements IGenerator
             ->getColumns()
             ->filter(fn (Column $column) => !in_array($column->getName(), ['id', 'created_at', 'updated_at']));
 
-        $columns->each(function (Column $column) {
-            $validation_rules = ValidationRules::resolve($column);
-            $this->validation_rules->put($column->getName(), $validation_rules);
-        });
+        $this->validation_rules = ValidationRules::resolveMany($columns);
     }
 
     /**
