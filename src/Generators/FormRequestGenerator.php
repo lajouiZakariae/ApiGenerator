@@ -34,13 +34,15 @@ class FormRequestGenerator implements IGenerator
      */
     function loadData(): void
     {
-        $this->table
+        $columns =
+            $this->table
             ->getColumns()
-            ->filter(fn (Column $column) => !in_array($column->getName(), ['id', 'created_at', 'updated_at']))
-            ->each(function (Column $column) {
-                $validation_rules = ValidationRules::resolve($column);
-                $this->validation_rules->put($column->getName(), $validation_rules);
-            });
+            ->filter(fn (Column $column) => !in_array($column->getName(), ['id', 'created_at', 'updated_at']));
+
+        $columns->each(function (Column $column) {
+            $validation_rules = ValidationRules::resolve($column);
+            $this->validation_rules->put($column->getName(), $validation_rules);
+        });
     }
 
     /**
