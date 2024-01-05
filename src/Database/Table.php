@@ -5,7 +5,8 @@ namespace Zakalajo\ApiGenerator\Database;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class Table {
+class Table
+{
     private string $name;
 
     private Column $primary_key;
@@ -16,60 +17,84 @@ class Table {
     /** @var Collection $relations  */
     private ?Collection $relations = null;
 
-    function getColumns() {
+    function getColumns()
+    {
         return $this->columns;
     }
 
-    function getName() {
+    function getName()
+    {
         return $this->name;
     }
 
-    function getModelName() {
+    function getModelName()
+    {
         return str()->modelName($this->name);
     }
 
-    function getControllerName() {
+    function getControllerName()
+    {
         return $this->getModelName() . 'Controller';
     }
 
-    function getResourceName() {
+    function getResourceName()
+    {
         return $this->getModelName() . 'Resource';
     }
 
-    function getPostRequestName() {
+    function getPostRequestName()
+    {
         return $this->getModelName() . 'PostRequest';
     }
 
-    function getFactoryName() {
+    function getFactoryName()
+    {
         return $this->getModelName() . 'Factory';
     }
 
-    function getRelations() {
+    function getRelations()
+    {
         return $this->relations;
     }
 
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $this->name = $name;
         $this->loadColumns();
         $this->loadPrimaryKey();
         $this->loadRelations();
     }
 
-    function loadColumns() {
+    function loadColumns()
+    {
         $columns_result = DB::table('INFORMATION_SCHEMA.COLUMNS')
             ->where('TABLE_SCHEMA', env('DB_DATABASE'))
             ->where('TABLE_NAME', $this->name)
             ->orderBy('ORDINAL_POSITION')
             ->get();
 
-        $this->columns = $columns_result->map(fn ($obj) => new Column($this->name, $obj));
+        $this->columns = $columns_result->map(fn ($obj) => new Column(
+            table: $this->name,
+            column_name: $obj->COLUMN_NAME,
+            data_type: $obj->DATA_TYPE,
+            column_default: $obj->COLUMN_DEFAULT,
+            char_max_length: $obj->CHARACTER_MAXIMUM_LENGTH,
+            numeric_scale: $obj->NUMERIC_SCALE,
+            numeric_precision: $obj->NUMERIC_PRECISION,
+            column_type: $obj->COLUMN_TYPE,
+            extra: $obj->EXTRA,
+            is_nullable: $obj->IS_NULLABLE,
+            column_key: $obj->COLUMN_KEY
+        ));
     }
 
-    function loadPrimaryKey(): void {
+    function loadPrimaryKey(): void
+    {
         $this->primary_key = $this->columns->first(fn (Column $column) => $column->isPrimary());
     }
 
-    function loadRelations(): void {
+    function loadRelations(): void
+    {
 
         $this->relations = collect();
 

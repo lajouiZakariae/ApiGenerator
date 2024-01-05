@@ -5,7 +5,8 @@ namespace Zakalajo\ApiGenerator\Database;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class Column {
+class Column
+{
     private string $table;
 
     private string $name;
@@ -38,107 +39,136 @@ class Column {
 
     private  ?Collection $has_many = null;
 
-    public function __construct(string $table, $object) {
+    public function __construct(
+        string $table,
+        string $column_name,
+        string $data_type,
+        ?string $column_default,
+        ?string $char_max_length,
+        $numeric_scale,
+        $numeric_precision,
+        string $column_type,
+        string $extra,
+        string $is_nullable,
+        string $column_key
+    ) {
         $this->table = $table;
 
-        $this->name = $object->COLUMN_NAME;
+        $this->name = $column_name;
 
-        $this->type = $object->DATA_TYPE;
+        $this->type = $data_type;
 
-        $this->default_value = $object->COLUMN_DEFAULT;
+        $this->default_value = $column_default;
 
-        $this->char_max_length = $object->CHARACTER_MAXIMUM_LENGTH;
+        $this->char_max_length = $char_max_length;
 
-        $this->max_length = intval(substr($object->COLUMN_TYPE, strpos($object->COLUMN_TYPE, '(') + 1, -1));
+        $this->max_length = intval(substr($column_type, strpos($column_type, '(') + 1, -1));
 
-        $this->nullable = $object->IS_NULLABLE === 'YES';
+        $this->nullable = $is_nullable === 'YES';
 
         /* Numeric Values */
-        $this->increments = $object->EXTRA === 'auto_increment';
+        $this->increments = $extra === 'auto_increment';
 
-        $this->numeric_scale = $object->NUMERIC_SCALE;
+        $this->numeric_scale = $numeric_scale;
 
-        $this->numeric_precision = $object->NUMERIC_PRECISION;
+        $this->numeric_precision = $numeric_precision;
 
-        $this->allowed_values = in_array($this->type, ['enum', 'set']) ? $this->extractValuesFromType($object->COLUMN_TYPE) : null;
+        $this->allowed_values = in_array($this->type, ['enum', 'set']) ? $this->extractValuesFromType($column_type) : null;
 
-        $this->unsigned = str_contains($object->COLUMN_TYPE, 'unsigned');
+        $this->unsigned = str_contains($column_type, 'unsigned');
 
         /* Keys */
-        $this->is_primary = $object->COLUMN_KEY === 'PRI';
+        $this->is_primary = $column_key === 'PRI';
 
-        $this->is_foreign = $object->COLUMN_KEY === 'MUL';
+        $this->is_foreign = $column_key === 'MUL';
 
         if ($this->is_foreign) $this->loadForeignKey();
 
         if ($this->is_primary) $this->loadHasManyRelations();
     }
 
-    function isPrimary(): bool {
+    function isPrimary(): bool
+    {
         return $this->is_primary;
     }
 
-    function isForeign(): bool {
+    function isForeign(): bool
+    {
         return $this->is_foreign;
     }
 
-    function getHasMany(): ?Collection {
+    function getHasMany(): ?Collection
+    {
         return $this->has_many;
     }
 
-    function getName(): string {
+    function getName(): string
+    {
         return $this->name;
     }
 
-    function getType(): string {
+    function getType(): string
+    {
         return $this->type;
     }
 
-    function isNullable(): bool {
+    function isNullable(): bool
+    {
         return $this->nullable;
     }
 
-    function getMaxLength(): int {
+    function getMaxLength(): int
+    {
         return $this->max_length;
     }
 
-    function getCharMexLength(): int {
+    function getCharMexLength(): int
+    {
         return $this->char_max_length;
     }
 
-    function getForeign(): ?object {
+    function getForeign(): ?object
+    {
         return $this->foreign;
     }
 
-    function getAllowedValues(): ?Collection {
+    function getAllowedValues(): ?Collection
+    {
         return $this->allowed_values;
     }
 
-    function isEnum(): bool {
+    function isEnum(): bool
+    {
         return $this->type === 'enum';
     }
 
-    function isUnSigned(): bool {
+    function isUnSigned(): bool
+    {
         return $this->unsigned;
     }
 
-    function isTextual(): bool {
+    function isTextual(): bool
+    {
         return in_array($this->type, ['varchar', 'char', 'smalltext', 'longtext', 'tinytext', 'text']);
     }
 
-    function isFloat(): bool {
+    function isFloat(): bool
+    {
         return in_array($this->type, ['float', 'double', 'decimal']);
     }
 
-    function isInteger(): bool {
+    function isInteger(): bool
+    {
         return $this->type === 'int';
     }
 
-    function isBigInt(): bool {
+    function isBigInt(): bool
+    {
         return $this->type === 'bigint';
     }
 
-    private function loadForeignKey(): void {
+    private function loadForeignKey(): void
+    {
         $result = DB::table('INFORMATION_SCHEMA.KEY_COLUMN_USAGE')
             ->where('TABLE_SCHEMA', env('DB_DATABASE'))
             ->where('TABLE_NAME', $this->table)
@@ -159,7 +189,8 @@ class Column {
     /**
      * Loads has many relationships
      */
-    private function loadHasManyRelations(): void {
+    private function loadHasManyRelations(): void
+    {
         $result = DB::table('INFORMATION_SCHEMA.KEY_COLUMN_USAGE')
             ->where('TABLE_SCHEMA', env('DB_DATABASE'))
             ->where('REFERENCED_TABLE_NAME', $this->table)
@@ -184,7 +215,8 @@ class Column {
     /**
      * Extract allowed values for sets and enums
      */
-    private function extractValuesFromType(string $type): Collection {
+    private function extractValuesFromType(string $type): Collection
+    {
         return str($type)
             ->substr(strpos($type, '(') + 2, -2)
             ->explode("','");
